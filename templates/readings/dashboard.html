@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#faf7f0">
+    <link rel="manifest" href="/static/pwa/manifest.webmanifest">
+    <link rel="icon" href="/static/pwa/icon.svg" type="image/svg+xml">
+    <title>My Readings | Spiritual Wisdom</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #faf7f0;
+            color: #29251f;
+            font-family: Georgia, serif;
+        }
+        header {
+            padding: 22px 6%;
+            border-bottom: 1px solid #e7dfd1;
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+        main { max-width: 1000px; margin: 30px auto; padding: 22px; }
+        a { color: #8a6835; }
+        .eyebrow {
+            color: #8a6835;
+            font: 11px Arial, sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        h1 { font-size: clamp(34px, 6vw, 52px); font-weight: normal; margin-bottom: 12px; }
+        h2 { font-size: 27px; font-weight: normal; margin-top: 0; }
+        h3 { font-size: 19px; font-weight: normal; }
+        p, li { font: 14px/1.8 Arial, sans-serif; }
+        .muted { color: #71695f; }
+        .nav { display: flex; flex-wrap: wrap; gap: 18px; margin: 22px 0; font: 13px Arial, sans-serif; }
+        .panel { background: #fffdf9; border: 1px solid #e7dfd1; padding: 25px; margin: 20px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 12px; }
+        .tile { min-width: 0; overflow-wrap: anywhere; padding: 18px 12px; background: #f5efe4; border: 1px solid #e7dfd1; text-align: center; }
+        .chinese { font-size: 32px; margin: 12px 0; }
+        .count { font-size: 29px; margin: 9px 0; }
+        .small { font: 12px/1.7 Arial, sans-serif; color: #71695f; }
+        .zodiac { font-size: 34px; margin: 12px 0; }
+        .notice { border-top: 1px solid #e7dfd1; padding-top: 18px; margin-top: 20px; }
+        footer { text-align: center; padding: 28px 20px; color: #71695f; font: 12px Arial, sans-serif; }
+        @media(max-width:520px) { main { padding: 15px; } .panel { padding: 18px; } }
+    </style>
+</head>
+<body>
+<header>SPIRITUAL WISDOM</header>
+<main>
+    <div class="nav">
+        <a href="{% url 'profiles:home' %}">Home</a>
+        <a href="{% url 'profiles:edit' %}">Edit birth profile</a>
+    </div>
+
+    <p class="eyebrow">Your personal space</p>
+    <h1>My Readings</h1>
+    <p class="muted">
+        Explore traditional Chinese metaphysical concepts as cultural learning
+        and personal reflection.
+    </p>
+
+    <section class="panel">
+        <p class="eyebrow">CHINESE ZODIAC</p>
+        <h2>{{ reading.zodiac.english }}</h2>
+        <div class="zodiac">{{ reading.zodiac.chinese }}</div>
+        <p><strong>Chinese lunar date:</strong> {{ reading.lunar_date }}</p>
+        <p class="muted">
+            Zodiac traditions associate symbolic qualities with animals and
+            birth years. These are cultural interpretations, not fixed
+            descriptions of a person's character or future.
+        </p>
+    </section>
+
+    <section class="panel">
+        <p class="eyebrow">BAZI ? FOUR PILLARS</p>
+        <h2>Your BaZi chart</h2>
+        <div class="grid">
+            {% for pillar in reading.pillars %}
+            <article class="tile">
+                <div class="small">{{ pillar.name }} Pillar</div>
+                <div class="chinese">{{ pillar.chinese }}</div>
+                <div class="small">Stem element</div>
+                <strong>{{ pillar.stem_element|default:"Not available" }}</strong>
+                <p class="small">
+                    Associated elements:
+                    {% for element in pillar.associated_elements %}
+                        {{ element }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Not available
+                    {% endfor %}
+                </p>
+            </article>
+            {% endfor %}
+        </div>
+
+        <h3>Your Day Master</h3>
+        <p>
+            <strong>{{ reading.day_master.stem }}</strong>
+            ? {{ reading.day_master.element|default:"Not available" }}
+        </p>
+        {% if not reading.birth_time_known %}
+        <p class="muted">
+            Your birth time was not provided, so the Hour Pillar is omitted.
+            The calculation uses noon only as an internal placeholder.
+        </p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <p class="eyebrow">WOOD ? FIRE ? EARTH ? METAL ? WATER</p>
+        <h2>Five Elements overview</h2>
+        <p class="muted">
+            These totals count visible stems, branch elements, and hidden stems.
+            Each occurrence counts once. They are structural counts, not a
+            traditional strength score or a recommendation of favorable elements.
+        </p>
+        <div class="grid">
+            {% for element, count in elements.structural_totals.items %}
+            <article class="tile">
+                <div>{{ element }}</div>
+                <div class="count">{{ count }}</div>
+                <div class="small">Occurrences</div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <h3>How the counts are grouped</h3>
+        <p><strong>Visible stems:</strong>
+            {% for element, count in elements.visible_stem_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} ? {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Branch elements:</strong>
+            {% for element, count in elements.branch_element_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} ? {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Hidden stems:</strong>
+            {% for element, count in elements.hidden_stem_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} ? {% endif %}
+            {% endfor %}
+        </p>
+        <p class="muted">{{ elements.method }}</p>
+    </section>
+
+    <section class="panel">
+        <p class="eyebrow">READING NOTES</p>
+        <h2>Understanding your results</h2>
+        <p>{{ reading.calculation_note }}</p>
+        {% if reading.warnings %}
+        <ul>
+            {% for warning in reading.warnings %}
+            <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <p class="muted">
+            Results use traditional-calendar calculations and may require
+            verification, especially around solar-term boundaries or when
+            birthplace and historical time-zone information are incomplete.
+            They are intended for cultural exploration and reflection, not
+            scientific predictions or professional advice.
+        </p>
+    </section>
+
+    <div class="nav">
+        <a href="{% url 'profiles:edit' %}">Update birth details</a>
+        <a href="{% url 'profiles:home' %}">Return home</a>
+    </div>
+</main>
+<footer>Made for reflection, learning, and a more mindful day.</footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+            console.error("Service worker registration failed:", error);
+        });
+    });
+}
+</script>
+</body>
+</html>
