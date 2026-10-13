@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create account | Spiritual Wisdom</title>
+    <style>
+        body{margin:0;background:#faf7f0;color:#29251f;font-family:Georgia,serif}
+        main{max-width:480px;margin:50px auto;padding:28px}
+        h1{font-size:38px;font-weight:normal}
+        label{display:block;margin-top:16px}
+        input{box-sizing:border-box;width:100%;padding:12px;margin-top:6px;border:1px solid #d8cdbb;background:#fffdf9}
+        button{margin-top:24px;padding:13px 20px;background:#29251f;color:white;border:0;cursor:pointer}
+        .errors{color:#9b2929;font:14px Arial,sans-serif}
+        p{font:14px/1.6 Arial,sans-serif}
+        a{color:#8a6835}
+    </style>
+</head>
+<body>
+<main>
+    <p>SPIRITUAL WISDOM</p>
+    <h1>Create your account</h1>
+    <p>Begin your personal journey of reflection.</p>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+        {% endfor %}
+        <button type="submit">Create account</button>
+    </form>
+    <p>Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    <p>Your personal readings are for reflection, not guaranteed predictions.</p>
+</main>
+</body>
+</html>

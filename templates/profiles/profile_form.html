@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Birth Profile | Spiritual Wisdom</title>
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;background:#faf7f0;color:#29251f;font-family:Georgia,serif}
+        header{padding:22px 7%;border-bottom:1px solid #e7dfd1;letter-spacing:2px}
+        main{max-width:800px;margin:36px auto;padding:24px}
+        h1{font-size:38px;font-weight:normal}
+        h2{font-size:26px;font-weight:normal;margin-top:0}
+        h3{font-size:19px;font-weight:normal;margin-bottom:8px}
+        label{display:block;margin-top:16px}
+        input,select{width:100%;padding:12px;margin-top:6px;border:1px solid #d8cdbb;background:#fffdf9}
+        button{margin-top:24px;padding:13px 20px;background:#29251f;color:white;border:0;cursor:pointer}
+        .errors{color:#9b2929;font:14px Arial,sans-serif}
+        p,.small,li{font:14px/1.7 Arial,sans-serif}
+        a{color:#8a6835}
+        .panel{margin:28px 0;padding:24px;background:#fffdf9;border:1px solid #e7dfd1}
+        .muted{color:#71695d}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px}
+        .tile{padding:16px 10px;text-align:center;background:#f5efe4;border:1px solid #e7dfd1;overflow-wrap:anywhere}
+        .chinese{font-size:30px;margin:10px 0}
+        .warning{padding-left:18px}
+        .eyebrow{font:11px Arial,sans-serif;letter-spacing:2px;color:#8a6835}
+        .count{font-size:28px;margin:8px 0}
+        .errors ul{padding-left:20px}
+        @media(max-width:520px){main{margin:16px auto;padding:18px}h1{font-size:32px}.panel{padding:18px}}
+    </style>
+</head>
+<body>
+<header>SPIRITUAL WISDOM</header>
+<main>
+    <p><a href="{% url 'profiles:home' %}">Home</a></p>
+    <h1>Your birth profile</h1>
+    <p>Save your details to personalize your cultural and reflective readings.</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <section class="panel">
+        <h2>Your birth details</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="muted">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="errors">{{ field.errors }}</div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit">Save birth profile</button>
+        </form>
+    </section>
+
+    {% if reading %}
+    <section class="panel">
+        <p class="eyebrow">YOUR PERSONALIZED PROFILE</p>
+        <h2>Your Chinese Zodiac</h2>
+        <h3>{{ reading.zodiac.english }}</h3>
+        <p class="muted">Chinese zodiac: {{ reading.zodiac.chinese }}</p>
+        <p><strong>Chinese lunar date:</strong> {{ reading.lunar_date }}</p>
+
+        <hr style="border:0;border-top:1px solid #e7dfd1;margin:24px 0">
+
+        <h2>Your BaZi Four Pillars</h2>
+        <p class="muted">
+            These pillars belong to a traditional Chinese metaphysical system.
+            The Hour Pillar is shown only when a birth time has been provided.
+        </p>
+
+        <div class="grid">
+            {% for pillar in reading.pillars %}
+            <div class="tile">
+                <div class="small">{{ pillar.name }} Pillar</div>
+                <div class="chinese">{{ pillar.chinese }}</div>
+                <div class="small">Stem element: {{ pillar.stem_element }}</div>
+                <div class="small">
+                    Associated elements:
+                    {% for element in pillar.associated_elements %}
+                        {{ element }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Not available
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3>Your Day Master</h3>
+        <p>
+            <strong>{{ reading.day_master.stem }}</strong>
+            — {{ reading.day_master.element }}
+        </p>
+
+        {% if elements %}
+        <hr style="border:0;border-top:1px solid #e7dfd1;margin:24px 0">
+        <h2>Five Elements Overview</h2>
+        <p class="muted">
+            This overview counts visible Heavenly Stems, Earthly Branch
+            elements, and hidden stems. Each occurrence counts once.
+            These are structural counts, not a traditional strength score
+            or a recommendation of favorable elements.
+        </p>
+
+        <div class="grid">
+            {% for element, count in elements.structural_totals.items %}
+            <div class="tile">
+                <div class="small">{{ element }}</div>
+                <div class="count">{{ count }}</div>
+                <div class="small">Occurrences</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3>How the counts are grouped</h3>
+        <p>
+            <strong>Visible stems:</strong>
+            {% for element, count in elements.visible_stem_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} · {% endif %}
+            {% endfor %}
+        </p>
+        <p>
+            <strong>Branch elements:</strong>
+            {% for element, count in elements.branch_element_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} · {% endif %}
+            {% endfor %}
+        </p>
+        <p>
+            <strong>Hidden stems:</strong>
+            {% for element, count in elements.hidden_stem_counts.items %}
+                {{ element }} {{ count }}{% if not forloop.last %} · {% endif %}
+            {% endfor %}
+        </p>
+        <p class="muted">{{ elements.method }}</p>
+        {% endif %}
+
+        {% if reading.warnings %}
+        <h3>Information and accuracy notes</h3>
+        <ul class="warning">
+            {% for warning in reading.warnings %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <p class="muted">{{ reading.calculation_note }}</p>
+        <p class="muted">
+            These readings describe traditional cultural beliefs and are
+            intended for personal reflection, not scientifically established
+            predictions or guarantees about the future.
+        </p>
+    </section>
+    {% else %}
+    <section class="panel">
+        <h2>Your reading will appear here</h2>
+        <p>Enter and save your birth date to generate your initial reading.</p>
+    </section>
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit">Log out</button>
+    </form>
+</main>
+</body>
+</html>
