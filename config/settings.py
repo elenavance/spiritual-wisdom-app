@@ -1,8 +1,11 @@
-﻿import os
+﻿import mimetypes
+import os
 from pathlib import Path
 
 import dj_database_url
 from dotenv import load_dotenv
+
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -114,7 +117,8 @@ TIME_ZONE = "Asia/Jakarta"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
     "default": {

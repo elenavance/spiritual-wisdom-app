@@ -29,6 +29,9 @@
         .errors ul{padding-left:20px}
         @media(max-width:520px){main{margin:16px auto;padding:18px}h1{font-size:32px}.panel{padding:18px}}
     </style>
+    <meta name="theme-color" content="#faf7f0">
+    <link rel="manifest" href="/static/pwa/manifest.webmanifest">
+    <link rel="icon" href="/static/pwa/icon.svg" type="image/svg+xml">
 </head>
 <body>
 <header>SPIRITUAL WISDOM</header>
@@ -176,5 +179,15 @@
         <button type="submit">Log out</button>
     </form>
 </main>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+      console.error("Service worker registration failed:", error);
+    });
+  });
+}
+</script>
 </body>
 </html>

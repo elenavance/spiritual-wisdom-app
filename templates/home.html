@@ -1,83 +1,365 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Spiritual Wisdom — Discover Yourself</title>
+    <meta name="theme-color" content="#faf7f0">
+    <meta name="description" content="Explore Chinese zodiac traditions, BaZi, the Five Elements, and thoughtful personal reflection.">
+    <title>Spiritual Wisdom ? Discover Yourself</title>
+    <link rel="manifest" href="/static/pwa/manifest.webmanifest">
+    <link rel="icon" href="/static/pwa/icon.svg" type="image/svg+xml">
     <style>
         :root {
             color-scheme: light;
             --ink: #29251f;
             --muted: #71695f;
             --paper: #faf7f0;
+            --white: #fffdf9;
             --gold: #a17d43;
+            --gold-light: #c9a76b;
             --line: #e7dfd1;
         }
         * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             margin: 0;
             background: var(--paper);
             color: var(--ink);
             font-family: Georgia, "Times New Roman", serif;
         }
-        header {
-            padding: 24px 7%;
+        a { color: inherit; }
+        .site-header {
+            min-height: 76px;
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             border-bottom: 1px solid var(--line);
-            letter-spacing: 2px;
-            font-size: 14px;
         }
-        main {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 100px 24px 80px;
+        .brand {
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 22px;
+            font: 13px Arial, sans-serif;
+        }
+        .nav a { text-decoration: none; }
+        .nav a:hover { color: var(--gold); }
+        .nav-cta {
+            padding: 11px 17px;
+            border: 1px solid var(--gold);
+        }
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 92px 22px 86px;
             text-align: center;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            left: -190px;
+            top: 45px;
+            border: 1px solid #e9dfcc;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            right: -155px;
+            bottom: 20px;
+            border: 1px solid #e9dfcc;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
         }
         .eyebrow {
             color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 3px;
-            font: 12px Arial, sans-serif;
+            font: 11px/1.8 Arial, sans-serif;
         }
         h1 {
             margin: 24px 0;
-            font-size: clamp(42px, 8vw, 72px);
+            font-size: clamp(43px, 8vw, 76px);
             font-weight: normal;
             line-height: 1.08;
         }
-        p {
+        .hero-copy {
+            max-width: 630px;
+            margin: 0 auto;
             color: var(--muted);
-            font: 17px/1.8 Arial, sans-serif;
+            font: 16px/1.9 Arial, sans-serif;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 13px;
+            margin-top: 32px;
+        }
+        .button {
+            display: inline-flex;
+            min-height: 48px;
+            padding: 14px 23px;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font: 13px Arial, sans-serif;
+            transition: background .2s, color .2s;
+        }
+        .button-primary {
+            background: var(--ink);
+            border: 1px solid var(--ink);
+            color: white;
+        }
+        .button-primary:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+        .button-secondary {
+            border: 1px solid var(--line);
+            background: transparent;
+        }
+        .button-secondary:hover { border-color: var(--gold); }
+        .welcome {
+            margin-top: 20px;
+            color: var(--gold);
+            font: 13px Arial, sans-serif;
+        }
+        .section {
+            padding: 70px 6%;
+            border-top: 1px solid var(--line);
+        }
+        .section-heading {
+            max-width: 650px;
+            margin: 0 auto 35px;
+            text-align: center;
+        }
+        h2 {
+            margin: 12px 0;
+            font-size: clamp(29px, 4vw, 42px);
+            font-weight: normal;
+        }
+        .section-heading p {
+            color: var(--muted);
+            font: 14px/1.8 Arial, sans-serif;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .feature {
+            min-height: 235px;
+            padding: 30px 25px;
+            border: 1px solid var(--line);
+            background: var(--white);
+        }
+        .feature-number {
+            color: var(--gold);
+            font: 12px Arial, sans-serif;
+            letter-spacing: 2px;
+        }
+        .feature h3 {
+            margin: 25px 0 12px;
+            font-size: 25px;
+            font-weight: normal;
+        }
+        .feature p {
+            margin: 0;
+            color: var(--muted);
+            font: 13px/1.9 Arial, sans-serif;
+        }
+        .journey {
+            padding: 65px 22px;
+            background: #f1ebdf;
+            text-align: center;
+        }
+        .journey-inner { max-width: 650px; margin: 0 auto; }
+        .journey p {
+            color: var(--muted);
+            font: 14px/1.9 Arial, sans-serif;
         }
         .note {
-            margin: 32px auto 0;
-            max-width: 600px;
-            padding-top: 24px;
-            border-top: 1px solid var(--line);
-            font-size: 13px;
+            max-width: 700px;
+            margin: 28px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid #ddd1bd;
+            color: var(--muted);
+            font: 12px/1.8 Arial, sans-serif;
         }
         footer {
-            padding: 24px;
-            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 24px 6%;
             color: var(--muted);
-            font: 12px Arial, sans-serif;
+            font: 11px/1.8 Arial, sans-serif;
+        }
+        @media (max-width: 700px) {
+            .site-header { align-items: flex-start; flex-direction: column; }
+            .nav { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 15px; }
+            .hero { padding: 70px 22px 65px; }
+            .cards { grid-template-columns: 1fr; }
+            .feature { min-height: auto; }
+            .section { padding: 55px 22px; }
         }
     </style>
 </head>
 <body>
-    <header>SPIRITUAL WISDOM</header>
-    <main>
-        <div class="eyebrow">A moment for self-discovery</div>
-        <h1>Understand your nature.<br>Reflect with intention.</h1>
-        <p>
-            Explore Chinese zodiac traditions, the Five Elements, and
-            Buddhist-inspired reflections through a thoughtful,
-            personalized experience.
-        </p>
-        <p class="note">
-            These readings are for cultural exploration and personal
-            reflection, not guaranteed predictions or professional advice.
-        </p>
-    </main>
-    <footer>Made for reflection, learning, and a more mindful day.</footer>
+<header class="site-header">
+    <a class="brand" href="/">SPIRITUAL WISDOM</a>
+    <nav class="nav" aria-label="Main navigation">
+        <a href="#discover">Discover</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profiles:edit' %}">My Profile</a>
+            <a class="nav-cta" href="{% url 'profiles:edit' %}">Continue Journey</a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}">Log In</a>
+            <a class="nav-cta" href="{% url 'accounts:signup' %}">Create Account</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="eyebrow">A moment for self-discovery</div>
+            <h1>Understand your nature.<br>Reflect with intention.</h1>
+            <p class="hero-copy">
+                Explore Chinese zodiac traditions, BaZi, and the Five Elements
+                through a thoughtful experience designed to help you learn
+                about yourself and reflect with greater awareness.
+            </p>
+
+            <div class="actions">
+                {% if user.is_authenticated %}
+                    <a class="button button-primary" href="{% url 'profiles:edit' %}">
+                        Open My Profile
+                    </a>
+                {% else %}
+                    <a class="button button-primary" href="{% url 'accounts:signup' %}">
+                        Begin Your Journey
+                    </a>
+                    <a class="button button-secondary" href="{% url 'accounts:login' %}">
+                        I Already Have an Account
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if user.is_authenticated %}
+                <p class="welcome">Welcome back, {{ user.first_name|default:user.email|escape }}.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="section" id="discover">
+        <div class="section-heading">
+            <div class="eyebrow">Explore ancient traditions</div>
+            <h2>Discover the layers of your nature</h2>
+            <p>
+                Explore these traditional systems as tools for cultural learning,
+                self-reflection, and a more mindful daily life.
+            </p>
+        </div>
+
+        <div class="cards">
+            <article class="feature">
+                <div class="feature-number">01 / THE ZODIAC</div>
+                <h3>Chinese Zodiac</h3>
+                <p>
+                    Learn about the twelve animal signs and the traditional
+                    symbolism associated with the year of birth.
+                </p>
+            </article>
+
+            <article class="feature">
+                <div class="feature-number">02 / YOUR BIRTH CHART</div>
+                <h3>BaZi</h3>
+                <p>
+                    Discover the Four Pillars tradition and how birth date
+                    and time are interpreted within classical Chinese metaphysics.
+                </p>
+            </article>
+
+            <article class="feature">
+                <div class="feature-number">03 / BALANCE</div>
+                <h3>The Five Elements</h3>
+                <p>
+                    Explore Wood, Fire, Earth, Metal, and Water and their
+                    symbolic relationships in traditional Chinese thought.
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <section class="journey">
+        <div class="journey-inner">
+            <div class="eyebrow">Your personal space</div>
+            <h2>A journey that begins with you</h2>
+            <p>
+                Create an account and save your birth profile to begin exploring
+                the personalized information currently available in the app.
+                Return to your profile whenever you want to reflect again.
+            </p>
+            <div class="actions">
+                {% if user.is_authenticated %}
+                    <a class="button button-primary" href="{% url 'profiles:edit' %}">
+                        Visit My Profile
+                    </a>
+                {% else %}
+                    <a class="button button-primary" href="{% url 'accounts:signup' %}">
+                        Create Your Account
+                    </a>
+                    <a class="button button-secondary" href="{% url 'accounts:login' %}">
+                        Log In
+                    </a>
+                {% endif %}
+            </div>
+            <p class="note">
+                These readings are for cultural exploration and personal
+                reflection. They are not guaranteed predictions and should not
+                replace professional medical, legal, financial, or other advice.
+            </p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>SPIRITUAL WISDOM</span>
+    <span>Made for reflection, learning, and a more mindful day.</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+            console.error("Service worker registration failed:", error);
+        });
+    });
+}
+</script>
 </body>
 </html>
