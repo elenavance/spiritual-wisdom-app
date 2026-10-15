@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ request.session.app_language|default:'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#17110f">
+    <meta name="description" content="Spiritual Wisdom — explore traditional Chinese metaphysics, the Five Elements, and mindful personal reflection.">
+    <title>{% block title %}Spiritual Wisdom{% endblock %}</title>
+    <link rel="manifest" href="{% static 'pwa/manifest.webmanifest' %}">
+    <link rel="icon" href="{% static 'pwa/icon.svg' %}" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/features.css' %}">
+    <link rel="stylesheet" href="{% static 'css/luxury-global.css' %}">
+    {% block extra_head %}{% endblock %}
+
+
+
+
+<style id="sw-profile-readings-contrast">
+/* Only the two pages with the contrast problem */
+body:has(a[href="/my-profile/"]) main.site-main .panel,
+body:has(a[href="/my-readings/"]) main.site-main .panel,
+body:has(a[href="/my-profile/"]) main.site-main .pillar,
+body:has(a[href="/my-readings/"]) main.site-main .pillar,
+body:has(a[href="/my-profile/"]) main.site-main .mini,
+body:has(a[href="/my-readings/"]) main.site-main .mini {
+    background: transparent !important;
+    border: 1px solid #c7a76a !important;
+    box-shadow: none !important;
+}
+
+body:has(a[href="/my-profile/"]) main.site-main,
+body:has(a[href="/my-profile/"]) main.site-main *,
+body:has(a[href="/my-readings/"]) main.site-main,
+body:has(a[href="/my-readings/"]) main.site-main * {
+    color: #f4eddf !important;
+}
+
+body:has(a[href="/my-profile/"]) main.site-main h1,
+body:has(a[href="/my-profile/"]) main.site-main h2,
+body:has(a[href="/my-profile/"]) main.site-main h3,
+body:has(a[href="/my-readings/"]) main.site-main h1,
+body:has(a[href="/my-readings/"]) main.site-main h2,
+body:has(a[href="/my-readings/"]) main.site-main h3 {
+    color: #fff1d5 !important;
+}
+
+body:has(a[href="/my-profile/"]) main.site-main a,
+body:has(a[href="/my-readings/"]) main.site-main a,
+body:has(a[href="/my-profile/"]) main.site-main th,
+body:has(a[href="/my-readings/"]) main.site-main th {
+    color: #f0d9a3 !important;
+}
+
+body:has(a[href="/my-profile/"]) main.site-main table,
+body:has(a[href="/my-profile/"]) main.site-main th,
+body:has(a[href="/my-profile/"]) main.site-main td,
+body:has(a[href="/my-readings/"]) main.site-main table,
+body:has(a[href="/my-readings/"]) main.site-main th,
+body:has(a[href="/my-readings/"]) main.site-main td {
+    background: transparent !important;
+    color: #f4eddf !important;
+}
+
+body:has(a[href="/my-profile/"]) header,
+body:has(a[href="/my-profile/"]) header *,
+body:has(a[href="/my-readings/"]) header,
+body:has(a[href="/my-readings/"]) header * {
+    color: revert !important;
+}
+</style>
+
+
+
+
+
+<style id="sw-remove-duplicate-inner-header">
+/* Hide only the duplicate header inside the page content.
+   Preserve the main luxury navigation at the top of the site. */
+main .page-container > header,
+main .page-container header {
+    display: none !important;
+}
+</style>
+
+</head>
+<body>
+    <div class="luxury-background" aria-hidden="true">
+        <div class="background-orb orb-one"></div>
+        <div class="background-orb orb-two"></div>
+        <div class="background-seal">道</div>
+    </div>
+
+    <header class="luxury-header">
+        <a class="brand-lockup" href="{% url 'profiles:home' %}" aria-label="Spiritual Wisdom home">
+            <span class="brand-seal">道</span>
+            <span class="brand-words">
+                <span class="brand-name">SPIRITUAL WISDOM</span>
+                <span class="brand-tagline">{{ app_copy.brand_tagline }}</span>
+            </span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Main navigation">
+            <a href="{% url 'profiles:home' %}">{{ app_copy.home }}</a>
+            <a href="{% url 'profiles:features' %}">{{ app_copy.features }}</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profiles:ask_me' %}">{{ app_copy.ask }}</a>
+                <a href="{% url 'readings:dashboard' %}">{{ app_copy.readings }}</a>
+                <a href="{% url 'profiles:edit_profile' %}">{{ app_copy.profile }}</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">{{ app_copy.login }}</a>
+                <a class="nav-register" href="{% url 'accounts:signup' %}">{{ app_copy.begin }}</a>
+            {% endif %}
+        </nav>
+
+        <div class="header-tools">
+            <form class="language-form" method="post" action="{% url 'profiles:set_language' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <label class="visually-hidden" for="site-language">{{ app_copy.language }}</label>
+                <select id="site-language" name="language" onchange="this.form.submit()" aria-label="{{ app_copy.language }}">
+                    <option value="en" {% if request.session.app_language == 'en' or not request.session.app_language %}selected{% endif %}>EN</option>
+                    <option value="zh" {% if request.session.app_language == 'zh' %}selected{% endif %}>&#31616;&#20307;&#20013;&#25991;</option>
+                </select>
+            </form>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'accounts:logout' %}" class="header-logout">
+                    {% csrf_token %}
+                    <button type="submit">{{ app_copy.logout }}</button>
+                </form>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="global-messages" aria-live="polite">
+            {% for message in messages %}
+                <div class="global-message">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="luxury-footer">
+        <div class="footer-ornament">✦ ────────── ☯ ────────── ✦</div>
+        <p class="footer-brand">SPIRITUAL WISDOM</p>
+        <p>{{ app_copy.brand_tagline }}</p>
+        <p class="footer-disclaimer">{{ app_copy.brand_disclaimer }}</p>
+        <p class="footer-copyright">© {% now "Y" %} Spiritual Wisdom</p>
+    </footer>
+
+    {% if user.is_authenticated %}
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+        <a href="{% url 'profiles:home' %}">
+            <span class="bottom-icon">⌂</span><span>{{ app_copy.home }}</span>
+        </a>
+        <a href="{% url 'profiles:features' %}">
+            <span class="bottom-icon">✧</span><span>{{ app_copy.features }}</span>
+        </a>
+        <a href="{% url 'profiles:ask_me' %}">
+            <span class="bottom-icon">☯</span><span>{{ app_copy.ask }}</span>
+        </a>
+        <a href="{% url 'readings:dashboard' %}">
+            <span class="bottom-icon">▤</span><span>{{ app_copy.readings }}</span>
+        </a>
+        <a href="{% url 'profiles:edit_profile' %}">
+            <span class="bottom-icon">♙</span><span>{{ app_copy.profile }}</span>
+        </a>
+    </nav>
+    {% endif %}
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const items = document.querySelectorAll(
+            ".site-main section, .feature-card, .auth-card, .master-panel"
+        );
+
+        if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+
+            items.forEach(function (item) {
+                item.classList.add("scroll-reveal");
+                observer.observe(item);
+            });
+        } else {
+            items.forEach(function (item) {
+                item.classList.add("is-visible");
+            });
+        }
+    });
+
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/service-worker.js").catch(function () {});
+        });
+    }
+    </script>
+    {% block extra_js %}{% endblock %}
+
+<script id="sw-shared-translation-layer">
+(function () {
+  const language = document.documentElement.lang || "en";
+  if (language !== "zh") return;
+
+  const translations = {
+    "Home": "\u9996\u9875",
+    "Features": "\u529f\u80fd",
+    "Ask Me": "\u95ee\u95ee\u5927\u5e08",
+    "My Readings": "\u6211\u7684\u547d\u7406\u89e3\u8bfb",
+    "Readings": "\u547d\u7406\u89e3\u8bfb",
+    "My Profile": "\u6211\u7684\u8d44\u6599",
+    "Profile": "\u4e2a\u4eba\u8d44\u6599",
+    "Sign In": "\u767b\u5f55",
+    "Log out": "\u9000\u51fa\u767b\u5f55",
+    "Begin Your Journey": "\u5f00\u542f\u60a8\u7684\u63a2\u7d22\u4e4b\u65c5",
+    "WELCOME BACK": "\u6b22\u8fce\u56de\u6765",
+    "BEGIN YOUR JOURNEY": "\u5f00\u542f\u60a8\u7684\u63a2\u7d22\u4e4b\u65c5",
+    "My Birth Profile": "\u6211\u7684\u51fa\u751f\u8d44\u6599",
+    "Birth Details": "\u51fa\u751f\u4fe1\u606f",
+    "Save Birth Profile": "\u4fdd\u5b58\u51fa\u751f\u8d44\u6599",
+    "BaZi Overview": "\u516b\u5b57\u6982\u89c8",
+    "Four Pillars": "\u56db\u67f1",
+    "Five Elements": "\u4e94\u884c",
+    "Calculation Notes": "\u8ba1\u7b97\u8bf4\u660e",
+    "Your Personal Guide": "\u60a8\u7684\u4e2a\u4eba\u6307\u5357",
+    "Personal Life": "\u4e2a\u4eba\u751f\u6d3b",
+    "Career": "\u4e8b\u4e1a",
+    "Money": "\u8d22\u5bcc",
+    "Love": "\u7231\u60c5",
+    "Health & Wellbeing": "\u5065\u5eb7\u4e0e\u8eab\u5fc3\u72b6\u6001",
+    "Family & Relationships": "\u5bb6\u5ead\u4e0e\u4eba\u9645\u5173\u7cfb",
+    "Personal Growth": "\u4e2a\u4eba\u6210\u957f",
+    "Share your experience.": "\u5206\u4eab\u60a8\u7684\u4f53\u9a8c\u3002",
+    "Submit Feedback": "\u63d0\u4ea4\u53cd\u9988",
+    "VIP Membership": "VIP\u4f1a\u5458",
+    "View membership": "\u67e5\u770b\u4f1a\u5458\u670d\u52a1",
+    "Spiritual Wisdom": "\u7075\u6027\u667a\u6167"
+  };
+
+  function translateTextNodes(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach(function (node) {
+      const original = node.nodeValue;
+      const trimmed = original.trim();
+      if (!trimmed || !translations[trimmed]) return;
+      node.nodeValue = original.replace(trimmed, translations[trimmed]);
+    });
+
+    root.querySelectorAll(
+      "input[placeholder], textarea[placeholder], input[type=submit], button"
+    ).forEach(function (element) {
+      const key = element.getAttribute("placeholder") ||
+        element.value || element.textContent.trim();
+
+      if (!translations[key]) return;
+
+      if (element.hasAttribute("placeholder")) {
+        element.setAttribute("placeholder", translations[key]);
+      } else if (element.value) {
+        element.value = translations[key];
+      } else {
+        element.textContent = translations[key];
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    translateTextNodes(document.body);
+  });
+})();
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<section class="hero reveal">
+  <p class="eyebrow">YOUR VOICE MATTERS</p>
+  <h1>Share your experience.</h1>
+  <p>Your feedback helps us make Spiritual Wisdom more thoughtful and useful.</p>
+</section>
+
+<section class="section reveal">
+  <div class="master-panel feedback-panel">
+    {% if messages %}
+      {% for message in messages %}
+        <p class="auth-message">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <label for="rating_type">What are you rating?</label>
+      <select id="rating_type" name="rating_type" required>
+        <option value="app">Overall app experience</option>
+        <option value="reading">A reading</option>
+      </select>
+
+      <fieldset class="star-field">
+        <legend>Your rating</legend>
+        <div class="star-options">
+          {% for value in "12345" %}
+            <label>
+              <input type="radio" name="stars" value="{{ value }}" required>
+              <span aria-label="{{ value }} star{{ value|pluralize }}">★</span>
+              <small>{{ value }}</small>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <label for="feedback_text">Comments (optional)</label>
+      <textarea id="feedback_text" name="feedback" rows="4" maxlength="2000" placeholder="Tell us what worked well or what we could improve."></textarea>
+
+      <button class="luxury-button" type="submit">Submit Feedback</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

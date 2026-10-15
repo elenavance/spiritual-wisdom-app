@@ -1,11 +1,12 @@
-﻿const CACHE_NAME = "spiritual-wisdom-shell-v1";
+﻿const CACHE_NAME = "spiritual-wisdom-shell-v2";
 const OFFLINE_URL = "/offline/";
+const APP_ICON_URL = "/static/pwa/icon.svg";
 const STATIC_PREFIX = "/static/";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.add(OFFLINE_URL))
+      .then((cache) => cache.addAll([OFFLINE_URL, APP_ICON_URL]))
       .then(() => self.skipWaiting())
   );
 });

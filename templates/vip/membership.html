@@ -1,0 +1,27 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<section class="hero reveal">
+  <p class="eyebrow">SPIRITUAL WISDOM · VIP</p>
+  <h1>Your journey,<br><span class="gold">with more room to explore.</span></h1>
+  <p>Enjoy a month of VIP access as you begin your Spiritual Wisdom journey.</p>
+</section>
+
+<section class="section reveal">
+  <div class="master-panel vip-panel">
+    {% if trial_active %}
+      <p class="eyebrow">YOUR MEMBERSHIP</p>
+      <h2>Your free-trial period</h2>
+      <p>Your account's one-month introductory period is currently active.</p>
+      <p class="vip-days">{{ days_remaining }} day{{ days_remaining|pluralize }} remaining</p>
+      <p>Trial ends: <strong>{{ trial_ends|date:"F j, Y" }}</strong></p>
+      <p class="small-note">Your trial status is calculated from your account creation date. No payment has been taken by this page.</p>
+    {% else %}
+      <p class="eyebrow">TRIAL PERIOD ENDED</p>
+      <h2>Continue your journey</h2>
+      <p>Your account's one-month introductory period has ended.</p>
+      <p>Paid VIP subscription options are not yet available. This page will not charge you or activate a paid plan.</p>
+    {% endif %}
+    <a class="vip-link" href="{% url 'profiles:features' %}">Explore features →</a>
+  </div>
+</section>
+{% endblock %}

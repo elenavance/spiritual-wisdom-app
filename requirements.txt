@@ -7,3 +7,5 @@ tzdata==2026.5
 gunicorn==26.2.0
 psycopg[binary]==3.3.6
 
+
+openai>=1.0.0,<3.0.0

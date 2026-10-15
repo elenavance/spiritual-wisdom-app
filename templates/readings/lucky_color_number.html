@@ -1,0 +1,92 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<main class="page-shell">
+  <section class="panel">
+    <p class="eyebrow">SPIRITUAL WISDOM</p>
+    <h1>Lucky Color &amp; Number</h1>
+    <p class="intro">
+      Explore symbolic colors and a personal reflection number based on
+      your saved birth profile.
+    </p>
+
+    {% if not profile %}
+      <h2>Your birth profile is needed</h2>
+      <p>
+        Save your birth date first. You only need to do this once.
+      </p>
+      <a class="luxury-button" href="{% url 'profiles:edit_profile' %}">
+        Set Up My Birth Profile
+      </a>
+    {% else %}
+      <div class="mini">
+        <p class="eyebrow">YOUR REFLECTION NUMBER</p>
+        <div style="font-size:3.5rem; font-family:Georgia,serif; color:#C9A45C;">
+          {{ lucky_number }}
+        </div>
+        <p>
+          Use this number as a small reminder of your intentions for the day.
+        </p>
+      </div>
+
+      <h2>Your Symbolic Colors</h2>
+      <p>
+        These suggestions are based on provisional useful-element candidates
+        from your chart. They are for cultural exploration, not guarantees
+        of luck or success.
+      </p>
+
+      <div class="overview-grid">
+        {% for color in colors %}
+          <article class="overview-card">
+            <div style="height:64px; border-radius:8px; background:{{ color.hex }}; border:1px solid #C9A45C;"></div>
+            <h3>{{ color.name }}</h3>
+            <p><strong>Element:</strong> {{ color.element }}</p>
+            <p>{{ color.meaning }}</p>
+          </article>
+        {% empty %}
+          <p>No color suggestions are available for this chart yet.</p>
+        {% endfor %}
+      </div>
+
+      {% if useful_elements %}
+        <p class="note">{{ useful_elements.explanation }}</p>
+        <p class="note">{{ useful_elements.limitations }}</p>
+      {% endif %}
+
+      <div class="mini">
+        <h3>A moment for reflection</h3>
+        <p>
+          Which quality would you like to bring into today—growth, energy,
+          stability, clarity, or calm?
+        </p>
+      </div>
+
+      <p class="note">
+        The number is calculated by adding the digits of your birth date
+        and reducing the result to a number from 1 to 9. This is an
+        app-defined, repeatable rule, not a traditional BaZi lucky-number
+        calculation. Color meanings are symbolic and cannot predict outcomes.
+      </p>
+
+      <a class="luxury-button" href="{% url 'profiles:edit_profile' %}">
+        Review My Birth Profile
+      </a>
+    {% endif %}
+  </section>
+
+  <section class="panel disclaimer">
+    <h3>A thoughtful perspective, not a fixed destiny</h3>
+    <p>
+      These suggestions are for cultural learning and personal reflection.
+      They are not guaranteed predictions or professional advice.
+    </p>
+  </section>
+</main>
+
+<div class="feature-rating-link" style="text-align:center; margin: 28px 0;">
+  <a href="{% url 'readings:feedback' %}?rating_type=reading"
+     style="display:inline-block; padding:12px 24px; border:1px solid #b99a55; color:#b99a55; text-decoration:none; border-radius:4px;">
+    ? Rate This Feature
+  </a>
+</div>
+{% endblock %}

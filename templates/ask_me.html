@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero reveal">
+  <p class="eyebrow">{{ app_copy.ask_eyebrow }}</p>
+  <h1>Ask Me</h1>
+  <p>{{ app_copy.ask_intro }}</p>
+</section>
+<section class="section reveal">
+  <div class="master-panel">
+    <div class="master-art" aria-hidden="true">道</div>
+    <p class="eyebrow">{{ app_copy.wisdom_companion }}</p>
+    <h2>{{ app_copy.welcome_seeker }}</h2>
+    <p>{{ app_copy.ask_guidance }}</p>
+    <div class="chat-placeholder"><p><strong>{{ app_copy.ask_preparing }}</strong></p><p>{{ app_copy.ask_future }}</p></div>
+    <p class="small-note">{{ app_copy.ask_disclaimer }}</p>
+  </div>
+</section>
+{% endblock %}

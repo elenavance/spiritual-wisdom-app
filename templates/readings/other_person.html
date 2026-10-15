@@ -1,0 +1,160 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<main class="page-shell">
+  <section class="panel">
+    <p class="eyebrow">SPIRITUAL WISDOM</p>
+    <h1>Reading for Friends</h1>
+    <p class="intro">
+      Discover the traditional BaZi chart and life themes of someone
+      special to you. Each reading uses the same calculation method
+      as your personal reading.
+    </p>
+
+    {% if not reading %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="luxury-button" type="submit">Create Reading</button>
+    </form>
+    {% endif %}
+  </section>
+
+  {% if reading %}
+  <section class="panel life-overview">
+    <p class="eyebrow">A PERSONAL GUIDE</p>
+    <h2>{{ profile.display_name|default:"Your Friend's Reading" }}</h2>
+    <p class="muted">
+      {{ reading.zodiac.english }} ·
+      {{ reading.day_master.stem }} ·
+      {{ reading.day_master.element }}
+    </p>
+
+    <h3>Your Overall Life Reading</h3>
+    <p>
+      This reading uses traditional BaZi symbolism for cultural learning
+      and personal reflection. It is not a guaranteed prediction.
+    </p>
+
+    <div class="overview-summary">
+      <div>
+        <span class="overview-label">Day Master</span>
+        <strong>{{ reading.day_master.stem }} · {{ reading.day_master.element }}</strong>
+      </div>
+      <div>
+        <span class="overview-label">Preliminary assessment</span>
+        <strong>{{ strength.label }}</strong>
+      </div>
+      <div>
+        <span class="overview-label">Birth time</span>
+        <strong>{% if reading.birth_time_known %}Provided{% else %}Not provided; Hour Pillar omitted{% endif %}</strong>
+      </div>
+    </div>
+
+    <div class="overview-grid">
+      {% for section in interpretation.life_sections %}
+      <article class="overview-card">
+        <span class="overview-number">{{ forloop.counter|stringformat:"02d" }}</span>
+        <h3>{{ section.title }}</h3>
+        <p>{{ section.summary }}</p>
+        <p class="reflection-prompt">
+          <strong>Reflect:</strong> {{ section.reflection }}
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+
+    <p class="overview-disclaimer">{{ interpretation.disclaimer }}</p>
+  </section>
+
+  <section class="panel">
+    <h2>Four Pillars</h2>
+    {% for pillar in reading.pillars %}
+    <article class="mini">
+      <h3>{{ pillar.name }} Pillar</h3>
+      <p><strong>{{ pillar.chinese }}</strong></p>
+      <p>{{ pillar.stem_element }} · {{ pillar.branch }}</p>
+      {% if pillar.ten_god_english %}
+      <p>{{ pillar.ten_god_english }}</p>
+      {% endif %}
+    </article>
+    {% endfor %}
+    {% for warning in reading.warnings %}
+    <p class="note">{{ warning }}</p>
+    {% endfor %}
+  </section>
+
+  <section class="panel">
+    <h2>Five Elements</h2>
+    <p>{{ useful_elements.explanation }}</p>
+    <p>
+      <strong>Primary candidates:</strong>
+      {% for item in useful_elements.primary_candidates %}
+        <span class="tag">{{ item }}</span>
+      {% empty %}
+        None
+      {% endfor %}
+    </p>
+    <p class="note">{{ useful_elements.limitations }}</p>
+  </section>
+
+  <section class="panel" id="reading-actions">
+    <div style="display:flex; flex-direction:column; align-items:center; gap:16px; padding:8px 0;">
+      <a
+        href="{% url 'readings:test_another_person' %}"
+        class="luxury-button"
+        style="display:inline-block; text-align:center; border:1px solid #C9A45C; color:#C9A45C; background:transparent; padding:12px 24px; text-decoration:none;"
+      >Take Another Reading</a>
+
+      <div style="width:100%; max-width:440px; text-align:center;">
+        <h3>Rate This Reading</h3>
+        <p class="muted">How helpful was this reading? Choose from 1 to 5 stars.</p>
+
+        <form method="post" action="{% url 'readings:feedback' %}">
+          {% csrf_token %}
+          <input type="hidden" name="rating_type" value="reading">
+          <input type="hidden" name="next" value="{% url 'readings:test_another_person' %}">
+
+          <fieldset class="star-field" style="border:0; padding:12px 0;">
+            <legend style="margin:0 auto 12px;">Your rating</legend>
+            <div class="star-options" style="display:flex; justify-content:center; gap:14px;">
+              {% for value in "12345" %}
+              <label style="cursor:pointer; text-align:center;">
+                <input type="radio" name="stars" value="{{ value }}" required>
+                <span aria-label="{{ value }} star{{ value|pluralize }}">★</span>
+                <small>{{ value }}</small>
+              </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <label for="reading-feedback" style="display:block; text-align:left; margin:12px 0 6px;">Comments (optional)</label>
+          <textarea
+            id="reading-feedback"
+            name="feedback"
+            rows="3"
+            maxlength="2000"
+            placeholder="What was helpful, or what could be improved?"
+            style="width:100%; box-sizing:border-box;"
+          ></textarea>
+
+          <button
+            class="luxury-button"
+            type="submit"
+            style="margin-top:12px; border:1px solid #C9A45C; color:#C9A45C; background:transparent; padding:12px 24px;"
+          >Submit Rating</button>
+        </form>
+      </div>
+
+      <div style="max-width:500px; text-align:center; margin-top:8px;">
+        <p><strong>Want a more personalized reading?</strong></p>
+        <p class="muted">
+          Install Spiritual Wisdom on your device for easier access to
+          your personal readings and mindful reflection tools. Use your
+          browser's install option if it is available.
+        </p>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,175 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<main class="page-shell">
+  <section class="panel">
+    <p class="eyebrow">SPIRITUAL WISDOM</p>
+    <h1>Love Compatibility</h1>
+    <p class="intro">
+      Explore the connection between two birth charts through traditional
+      BaZi and Five Elements symbolism. Your saved birth profile is used
+      automatically, so you only need to enter the other person's details.
+    </p>
+
+    {% if needs_profile %}
+      <div class="note">
+        <h2>Your birth profile is needed first</h2>
+        <p>
+          Save your own birth date in My Profile before comparing charts.
+          You only need to do this once.
+        </p>
+        <a class="luxury-button" href="{% url 'profiles:edit_profile' %}">
+          Set Up My Birth Profile
+        </a>
+      </div>
+    {% elif not compatibility %}
+      <h2>About the other person</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="luxury-button" type="submit">
+          Explore Compatibility
+        </button>
+      </form>
+    {% endif %}
+  </section>
+
+  {% if compatibility %}
+    <section class="panel life-overview">
+      <p class="eyebrow">YOUR CONNECTION</p>
+      <h2>
+        {{ your_chart.profile.display_name|default:"Your Chart" }}
+        <span class="gold"> &amp; </span>
+        {{ partner_chart.profile.display_name|default:"Their Chart" }}
+      </h2>
+      <p class="muted">
+        A traditional symbolic comparison, offered for reflection rather
+        than a prediction of relationship success.
+      </p>
+
+      <div class="overview-grid">
+        <article class="overview-card">
+          <h3>Your Day Master</h3>
+          <p>
+            <strong>
+              {{ your_chart.reading.day_master.stem }}
+              · {{ your_chart.day_element }}
+            </strong>
+          </p>
+          <p>
+            Zodiac: {{ your_chart.reading.zodiac.english }}
+          </p>
+          <p>
+            Birth time:
+            {% if your_chart.reading.birth_time_known %}
+              Provided
+            {% else %}
+              Not provided; Hour Pillar omitted
+            {% endif %}
+          </p>
+        </article>
+
+        <article class="overview-card">
+          <h3>Their Day Master</h3>
+          <p>
+            <strong>
+              {{ partner_chart.reading.day_master.stem }}
+              · {{ partner_chart.day_element }}
+            </strong>
+          </p>
+          <p>
+            Zodiac: {{ partner_chart.reading.zodiac.english }}
+          </p>
+          <p>
+            Birth time:
+            {% if partner_chart.reading.birth_time_known %}
+              Provided
+            {% else %}
+              Not provided; Hour Pillar omitted
+            {% endif %}
+          </p>
+        </article>
+      </div>
+
+      <h2>{{ compatibility.title }}</h2>
+      <p>{{ compatibility.description }}</p>
+
+      <div class="mini">
+        <h3>A question to reflect on together</h3>
+        <p>{{ compatibility.reflection }}</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Four Pillars Comparison</h2>
+      <p class="muted">
+        Only pillars available from the supplied birth details are shown.
+        If a birth time is missing, its Hour Pillar is omitted.
+      </p>
+
+      <div class="overview-grid">
+        <article class="overview-card">
+          <h3>Your Chart</h3>
+          {% for pillar in your_chart.reading.pillars %}
+            <p>
+              <strong>{{ pillar.name }} Pillar</strong><br>
+              {{ pillar.chinese }} · {{ pillar.stem_element }}
+              {% if pillar.ten_god_english %}
+                <br>{{ pillar.ten_god_english }}
+              {% endif %}
+            </p>
+          {% endfor %}
+        </article>
+
+        <article class="overview-card">
+          <h3>Their Chart</h3>
+          {% for pillar in partner_chart.reading.pillars %}
+            <p>
+              <strong>{{ pillar.name }} Pillar</strong><br>
+              {{ pillar.chinese }} · {{ pillar.stem_element }}
+              {% if pillar.ten_god_english %}
+                <br>{{ pillar.ten_god_english }}
+              {% endif %}
+            </p>
+          {% endfor %}
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Explore Another Connection</h2>
+      <p>
+        This comparison uses the Day Master element relationship as a
+        starting point. It is not a complete traditional marriage
+        compatibility assessment and does not determine whether a
+        relationship will succeed.
+      </p>
+      <a
+        class="luxury-button"
+        href="{% url 'readings:love_compatibility' %}"
+      >Compare With Someone Else</a>
+      <a
+        class="luxury-button"
+        href="{% url 'profiles:edit_profile' %}"
+      >Review My Birth Profile</a>
+    </section>
+  {% endif %}
+
+  <section class="panel" style="text-align:center;">
+    <a
+      class="luxury-button"
+      href="{% url 'readings:feedback' %}?rating_type=reading"
+      style="display:inline-block; border:1px solid #C9A45C; color:#C9A45C; background:transparent; padding:12px 24px; text-decoration:none;"
+    >? Rate This Reading</a>
+  </section>
+
+  <section class="panel disclaimer">
+    <h3>A thoughtful perspective, not a fixed destiny</h3>
+    <p>
+      Traditional BaZi and Five Elements are cultural frameworks for
+      reflection. They are not scientific measures of compatibility,
+      guaranteed predictions, or substitutes for communication and
+      professional relationship support.
+    </p>
+  </section>
+</main>
+{% endblock %}
