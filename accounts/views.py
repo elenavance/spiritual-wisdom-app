@@ -14,8 +14,26 @@ def signup_view(request):
     form = SignupForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         user = form.save()
+        guest_data = request.session.pop("guest_reading_profile", None)
+        saved_guest_profile = False
+        if isinstance(guest_data, dict):
+            try:
+                BirthProfile.objects.create(
+                    user=user,
+                    display_name=guest_data.get("display_name", ""),
+                    gender=guest_data.get("gender", ""),
+                    birth_date=guest_data["birth_date"],
+                    birth_time=guest_data.get("birth_time") or None,
+                    birth_place=guest_data.get("birth_place", ""),
+                    birth_timezone=guest_data.get("birth_timezone", ""),
+                )
+                saved_guest_profile = True
+            except (KeyError, TypeError, ValueError):
+                request.session["guest_reading_profile"] = guest_data
         login(request, user)
         messages.success(request, "Your account has been created.")
+        if saved_guest_profile:
+            return redirect("readings:dashboard")
         return redirect("profiles:edit_profile")
 
     return render(request, "accounts/signup.html", {"form": form})
