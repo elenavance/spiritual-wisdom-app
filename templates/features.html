@@ -50,7 +50,7 @@
       {% elif user.is_authenticated %}
         <a href="{% url 'profiles:vip' %}">Start your free one-month VIP trial →</a>
       {% else %}
-        <a href="{% url 'accounts:signup' %}">Create an account to start the free trial →</a>
+        <a href="{% url 'accounts:signup' %}?next={% url 'profiles:vip' %}">Create an account to start the free trial →</a>
       {% endif %}
     </article>
 
