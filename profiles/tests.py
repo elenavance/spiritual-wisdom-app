@@ -159,7 +159,7 @@ class VipTrialTests(TestCase):
         trial = VipTrial.objects.get(user=self.user)
         self.assertTrue(trial.is_active())
         self.assertTrue(user_has_active_vip(self.user))
-        self.assertEqual(trial.activated_at, trial.activated_at)
+        self.assertGreaterEqual(trial.activated_at, self.user.date_joined)
 
     def test_repeated_start_does_not_reset_trial(self):
         self.client.post(reverse("profiles:vip"))
