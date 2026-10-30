@@ -158,6 +158,7 @@ class VipTrialTests(TestCase):
         self.assertRedirects(response, reverse("profiles:vip"))
         trial = VipTrial.objects.get(user=self.user)
         self.assertTrue(trial.is_active())
+        self.user.refresh_from_db()
         self.assertTrue(user_has_active_vip(self.user))
         self.assertGreaterEqual(trial.activated_at, self.user.date_joined)
 
