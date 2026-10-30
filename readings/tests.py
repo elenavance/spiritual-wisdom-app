@@ -90,3 +90,42 @@ class FeedbackViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(SpiritualWisdomRating.objects.count(), 0)
+
+
+class GuestReadingFlowTests(TestCase):
+    def test_guest_can_open_preview_form(self):
+        response = self.client.get(reverse("readings:preview"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Start with your birth details")
+
+    def test_guest_can_view_result_before_signup(self):
+        response = self.client.post(
+            reverse("readings:preview"),
+            {"birth_date": "1990-05-17", "birth_time": "08:30", "birth_place": "Jakarta"},
+        )
+        self.assertRedirects(response, reverse("readings:dashboard"))
+        result = self.client.get(reverse("readings:dashboard"))
+        self.assertEqual(result.status_code, 200)
+        self.assertContains(result, "Create an account to save")
+        self.assertEqual(self.client.session.get("guest_reading_profile")["birth_date"], "1990-05-17")
+
+    def test_guest_profile_is_saved_when_signup_completes(self):
+        self.client.post(
+            reverse("readings:preview"),
+            {"birth_date": "1990-05-17", "birth_time": "08:30", "birth_place": "Jakarta"},
+        )
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "first_name": "New",
+                "last_name": "Reader",
+                "email": "new-reader@example.com",
+                "password1": "Test-password-482!",
+                "password2": "Test-password-482!",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        user = get_user_model().objects.get(email="new-reader@example.com")
+        self.assertEqual(user.birth_profile.birth_date.isoformat(), "1990-05-17")
+        self.assertEqual(user.birth_profile.birth_place, "Jakarta")
+        self.assertNotIn("guest_reading_profile", self.client.session)
