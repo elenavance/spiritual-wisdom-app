@@ -19,12 +19,14 @@
 
     <article class="feature-card">
       <span class="feature-symbol">♡</span>
-      <h3>{{ app_copy.love_compatibility }}</h3>
+      <h3>{{ app_copy.love_compatibility }} <small>VIP · one-month trial</small></h3>
       <p>{{ app_copy.love_compatibility_copy }}</p>
-      {% if user.is_authenticated %}
+      {% if user.is_authenticated and vip_active %}
         <a href="{% url 'readings:love_compatibility' %}">{{ app_copy.explore_compatibility }} →</a>
+      {% elif user.is_authenticated %}
+        <a href="{% url 'profiles:vip' %}">Start your free one-month VIP trial →</a>
       {% else %}
-        <a href="{% url 'accounts:login' %}?next={% url 'readings:love_compatibility' %}">{{ app_copy.sign_in_explore }} →</a>
+        <a href="{% url 'accounts:signup' %}?next={% url 'profiles:vip' %}">Create an account to start the free trial →</a>
       {% endif %}
     </article>
 
@@ -41,12 +43,14 @@
 
     <article class="feature-card">
       <span class="feature-symbol">朋</span>
-      <h3>{{ app_copy.reading_friends }}</h3>
+      <h3>{{ app_copy.reading_friends }} <small>VIP · one-month trial</small></h3>
       <p>{{ app_copy.reading_friends_copy }}</p>
-      {% if user.is_authenticated %}
+      {% if user.is_authenticated and vip_active %}
         <a href="{% url 'readings:test_another_person' %}">{{ app_copy.read_for_friend }} →</a>
+      {% elif user.is_authenticated %}
+        <a href="{% url 'profiles:vip' %}">Start your free one-month VIP trial →</a>
       {% else %}
-        <a href="{% url 'accounts:login' %}?next={% url 'readings:test_another_person' %}">{{ app_copy.sign_in_friend }} →</a>
+        <a href="{% url 'accounts:signup' %}?next={% url 'profiles:vip' %}">Create an account to start the free trial →</a>
       {% endif %}
     </article>
 

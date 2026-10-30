@@ -1,12 +1,14 @@
-﻿from datetime import date, time
+﻿from datetime import date, datetime, time, timezone as datetime_timezone
 from types import SimpleNamespace
 
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase
+from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase, TestCase, override_settings
+from django.urls import reverse
 from lunar_python import Solar
 
 from profiles.forms import BirthProfileForm
-from profiles.models import validate_birth_timezone
+from profiles.models import VipTrial, user_has_active_vip, validate_birth_timezone
 from profiles.services.bazi import calculate_birth_reading
 
 
@@ -129,3 +131,91 @@ class BirthTimezoneValidationTests(SimpleTestCase):
 
         self.assertIn("birth_timezone", form.fields)
         self.assertFalse(form.fields["birth_timezone"].required)
+
+
+
+@override_settings(STORAGES={"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}})
+class VipTrialTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email="vip-trial@example.com",
+            password="SecureTestPass_482!",
+        )
+        self.client.force_login(self.user)
+
+    def test_account_creation_does_not_start_vip_trial(self):
+        self.assertFalse(VipTrial.objects.filter(user=self.user).exists())
+        self.assertFalse(user_has_active_vip(self.user))
+
+    def test_user_can_start_one_trial_without_a_payment_method(self):
+        page = self.client.get(reverse("profiles:vip"))
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, "No payment method is required")
+        self.assertContains(page, "Start my free VIP month")
+        self.assertFalse(user_has_active_vip(self.user))
+
+        response = self.client.post(reverse("profiles:vip"))
+        self.assertRedirects(response, reverse("profiles:vip"))
+        trial = VipTrial.objects.get(user=self.user)
+        self.assertTrue(trial.is_active())
+        self.user.refresh_from_db()
+        self.assertTrue(user_has_active_vip(self.user))
+        self.assertGreaterEqual(trial.activated_at, self.user.date_joined)
+
+    def test_repeated_start_does_not_reset_trial(self):
+        self.client.post(reverse("profiles:vip"))
+        original_start = VipTrial.objects.get(user=self.user).activated_at
+        self.client.post(reverse("profiles:vip"))
+        self.assertEqual(VipTrial.objects.get(user=self.user).activated_at, original_start)
+        self.assertEqual(VipTrial.objects.count(), 1)
+
+    def test_signup_can_return_to_trial_without_starting_it_automatically(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "first_name": "Trial",
+                "last_name": "Reader",
+                "email": "trial-reader@example.com",
+                "password1": "SecureTestPass_482!",
+                "password2": "SecureTestPass_482!",
+                "next_url": reverse("profiles:vip"),
+            },
+        )
+        self.assertRedirects(response, reverse("profiles:vip"))
+        user = get_user_model().objects.get(email="trial-reader@example.com")
+        self.assertFalse(VipTrial.objects.filter(user=user).exists())
+
+    def test_signup_rejects_external_return_destination(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "first_name": "Safe",
+                "last_name": "Reader",
+                "email": "safe-reader@example.com",
+                "password1": "SecureTestPass_482!",
+                "password2": "SecureTestPass_482!",
+                "next_url": "https://example.org/",
+            },
+        )
+        self.assertRedirects(response, reverse("profiles:edit_profile"))
+
+    def test_trial_ends_on_same_calendar_day_next_month(self):
+        trial = VipTrial(
+            user=self.user,
+            activated_at=datetime(2024, 1, 31, 12, 0, tzinfo=datetime_timezone.utc),
+        )
+        self.assertEqual(
+            trial.ends_at,
+            datetime(2024, 2, 29, 12, 0, tzinfo=datetime_timezone.utc),
+        )
+        self.assertTrue(trial.is_active(datetime(2024, 2, 29, 11, 59, tzinfo=datetime_timezone.utc)))
+        self.assertFalse(trial.is_active(trial.ends_at))
+
+    def test_expired_trial_does_not_grant_vip_access(self):
+        trial = VipTrial.objects.create(
+            user=self.user,
+            activated_at=datetime(2024, 1, 31, 12, 0, tzinfo=datetime_timezone.utc),
+        )
+        self.assertFalse(trial.is_active(datetime(2024, 3, 1, 12, 0, tzinfo=datetime_timezone.utc)))

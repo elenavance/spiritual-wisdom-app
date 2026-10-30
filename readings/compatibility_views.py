@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
+from profiles.decorators import vip_required
 from profiles.forms import BirthProfileForm
 from profiles.models import BirthProfile
 from profiles.services.bazi import (
@@ -44,6 +45,7 @@ def _build_person_chart(profile):
 
 @login_required
 @require_http_methods(["GET", "POST"])
+@vip_required
 def love_compatibility(request):
     try:
         own_profile = request.user.birth_profile

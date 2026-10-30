@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from lunar_python import Solar
 
+from profiles.decorators import vip_required
 from profiles.forms import BirthProfileForm
 from profiles.models import BirthProfile
 from profiles.services.bazi import calculate_birth_reading
@@ -10,6 +11,7 @@ from profiles.services.chart_analysis import build_chart_analysis
 
 
 @login_required
+@vip_required
 def test_another_person(request):
     form = BirthProfileForm(
         request.POST or None,

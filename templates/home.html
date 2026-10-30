@@ -15,7 +15,7 @@
                     <a class="button button-primary" href="{% url 'readings:dashboard' %}">{{ app_copy.readings }} ↗</a>
                     <a class="button button-secondary" href="{% url 'profiles:edit_profile' %}">{{ app_copy.profile }}</a>
                 {% else %}
-                    <a class="button button-primary" href="{% url 'accounts:signup' %}">{{ app_copy.begin }} ↗</a>
+                    <a class="button button-primary" href="{% url 'readings:preview' %}">{{ app_copy.begin }} ↗</a>
                     <a class="button button-secondary" href="{% url 'accounts:login' %}">{{ app_copy.already }}</a>
                 {% endif %}
             </div>

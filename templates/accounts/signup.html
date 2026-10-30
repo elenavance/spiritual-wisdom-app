@@ -14,6 +14,7 @@
 
     <form method="post">
       {% csrf_token %}
+      {% if next_url %}<input type="hidden" name="next_url" value="{{ next_url }}">{% endif %}
       {{ form.as_p }}
       <button class="luxury-button" type="submit">Create Account</button>
     </form>
