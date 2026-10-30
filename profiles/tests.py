@@ -168,6 +168,38 @@ class VipTrialTests(TestCase):
         self.assertEqual(VipTrial.objects.get(user=self.user).activated_at, original_start)
         self.assertEqual(VipTrial.objects.count(), 1)
 
+    def test_signup_can_return_to_trial_without_starting_it_automatically(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "first_name": "Trial",
+                "last_name": "Reader",
+                "email": "trial-reader@example.com",
+                "password1": "SecureTestPass_482!",
+                "password2": "SecureTestPass_482!",
+                "next_url": reverse("profiles:vip"),
+            },
+        )
+        self.assertRedirects(response, reverse("profiles:vip"))
+        user = get_user_model().objects.get(email="trial-reader@example.com")
+        self.assertFalse(VipTrial.objects.filter(user=user).exists())
+
+    def test_signup_rejects_external_return_destination(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "first_name": "Safe",
+                "last_name": "Reader",
+                "email": "safe-reader@example.com",
+                "password1": "SecureTestPass_482!",
+                "password2": "SecureTestPass_482!",
+                "next_url": "https://example.org/",
+            },
+        )
+        self.assertRedirects(response, reverse("profiles:edit_profile"))
+
     def test_trial_ends_on_same_calendar_day_next_month(self):
         trial = VipTrial(
             user=self.user,
