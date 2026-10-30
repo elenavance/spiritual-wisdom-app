@@ -85,9 +85,7 @@ class VipTrial(models.Model):
 
 
 def user_has_active_vip(user, at=None):
-    if not getattr(user, "is_authenticated", False):
+    if not getattr(user, "is_authenticated", False) or not user.pk:
         return False
-    try:
-        return user.vip_trial.is_active(at)
-    except VipTrial.DoesNotExist:
-        return False
+    trial = VipTrial.objects.filter(user_id=user.pk).first()
+    return bool(trial and trial.is_active(at))
