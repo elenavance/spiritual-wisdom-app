@@ -92,6 +92,7 @@ class FeedbackViewTests(TestCase):
         self.assertEqual(SpiritualWisdomRating.objects.count(), 0)
 
 
+@override_settings(STORAGES={"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}})
 class GuestReadingFlowTests(TestCase):
     def test_guest_can_open_preview_form(self):
         response = self.client.get(reverse("readings:preview"))
