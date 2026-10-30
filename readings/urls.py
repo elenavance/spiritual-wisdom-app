@@ -10,6 +10,7 @@ from . import (
 app_name = "readings"
 
 urlpatterns = [
+    path("preview/", views.preview, name="preview"),
     path("feedback/", feedback_views.feedback, name="feedback"),
     path(
         "love-compatibility/",
