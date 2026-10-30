@@ -2,6 +2,8 @@
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from profiles.models import BirthProfile, VipTrial
+
 from .models import SpiritualWisdomRating
 
 
@@ -130,3 +132,46 @@ class GuestReadingFlowTests(TestCase):
         self.assertEqual(user.birth_profile.birth_date.isoformat(), "1990-05-17")
         self.assertEqual(user.birth_profile.birth_place, "Jakarta")
         self.assertNotIn("guest_reading_profile", self.client.session)
+
+
+
+@override_settings(STORAGES={"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}})
+class VipFeatureAccessTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email="vip-access@example.com",
+            password="SecureTestPass_482!",
+        )
+        self.client.force_login(self.user)
+
+    def test_compatibility_and_friend_reading_redirect_until_trial_starts(self):
+        for name in ("readings:love_compatibility", "readings:test_another_person"):
+            response = self.client.get(reverse(name))
+            self.assertRedirects(response, reverse("profiles:vip"))
+
+    def test_active_trial_unlocks_both_vip_reading_features(self):
+        BirthProfile.objects.create(
+            user=self.user,
+            birth_date="1990-05-17",
+            birth_place="Jakarta",
+        )
+        VipTrial.objects.create(user=self.user)
+        compatibility = self.client.get(reverse("readings:love_compatibility"))
+        friend_reading = self.client.get(reverse("readings:test_another_person"))
+        self.assertEqual(compatibility.status_code, 200)
+        self.assertEqual(friend_reading.status_code, 200)
+
+    def test_expired_trial_locks_vip_features_but_keeps_core_reading_available(self):
+        BirthProfile.objects.create(
+            user=self.user,
+            birth_date="1990-05-17",
+            birth_place="Jakarta",
+        )
+        VipTrial.objects.create(
+            user=self.user,
+            activated_at="2024-01-01T00:00:00Z",
+        )
+        compatibility = self.client.get(reverse("readings:love_compatibility"))
+        core_reading = self.client.get(reverse("readings:dashboard"))
+        self.assertRedirects(compatibility, reverse("profiles:vip"))
+        self.assertEqual(core_reading.status_code, 200)
