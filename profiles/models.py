@@ -1,8 +1,10 @@
-﻿from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+﻿from calendar import monthrange
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 
 def validate_birth_timezone(value):
@@ -58,3 +60,34 @@ class BirthProfile(models.Model):
 
     def __str__(self):
         return f"Birth profile — {self.user.email}"
+
+
+
+class VipTrial(models.Model):
+    """A one-time, user-started, no-payment one-calendar-month trial."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="vip_trial",
+    )
+    activated_at = models.DateTimeField(default=timezone.now)
+
+    @property
+    def ends_at(self):
+        month = self.activated_at.month % 12 + 1
+        year = self.activated_at.year + (1 if self.activated_at.month == 12 else 0)
+        day = min(self.activated_at.day, monthrange(year, month)[1])
+        return self.activated_at.replace(year=year, month=month, day=day)
+
+    def is_active(self, at=None):
+        return (at or timezone.now()) < self.ends_at
+
+
+def user_has_active_vip(user, at=None):
+    if not getattr(user, "is_authenticated", False):
+        return False
+    try:
+        return user.vip_trial.is_active(at)
+    except VipTrial.DoesNotExist:
+        return False
