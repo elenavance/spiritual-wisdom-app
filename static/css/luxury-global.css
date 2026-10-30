@@ -900,3 +900,11 @@ button, select { cursor: pointer; }
   .page-container { width: min(100% - 24px,1180px); padding-top: 24px; }
   .page-container .panel { padding: 16px; }
 }
+
+
+/* Clear keyboard focus across mouse and touch interfaces. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #fff !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, .85) !important;
+}
