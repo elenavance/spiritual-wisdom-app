@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Start your reading — Spiritual Wisdom{% endblock %}
+{% block content %}
+<main class="panel">
+  <p class="eyebrow">A moment for self-discovery</p>
+  <h1>Start with your birth details</h1>
+  <p>Your details are used to prepare this reading and held in your browser session for up to one hour. You can explore the result before creating an account.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-field">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button class="button button-primary" type="submit">Show my reading</button>
+  </form>
+</main>
+{% endblock %}
