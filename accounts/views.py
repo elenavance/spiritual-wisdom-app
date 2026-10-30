@@ -4,7 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-from profiles.models import BirthProfile\n\nfrom .forms import SignupForm
+from profiles.models import BirthProfile
+
+from .forms import SignupForm
 
 
 def signup_view(request):
