@@ -5,6 +5,13 @@
 <main>
 <h1>{{ app_copy.my_bazi_readings }}</h1>
 <p class="intro">{{ app_copy.reading_intro }}</p>
+{% if is_guest_reading %}
+<section class="panel" aria-labelledby="guest-save-title">
+  <h2 id="guest-save-title">Your reading is ready</h2>
+  <p>Your details stay in this browser session for up to one hour. Create a free account to save this birth profile and return to your reading.</p>
+  <a class="button button-primary" href="{% url 'accounts:signup' %}">Create an account to save</a>
+</section>
+{% endif %}
 
 {% if reading and interpretation %}
 <section class="panel life-overview">
