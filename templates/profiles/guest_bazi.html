@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Free Guest BaZi Reading — Spiritual Wisdom{% endblock %}
+{% block content %}
+<section class="hero guest-bazi-hero">
+  <p class="eyebrow">YOUR FIRST READING IS FREE</p>
+  <h1>Discover your <span class="gold">Four Pillars.</span></h1>
+  <p>Enter your birth details to explore a traditional BaZi chart. No account is required for this one-time guest calculation.</p>
+  <p class="small-note">Your details are used for this calculation and are not saved to a member profile. Birth time is interpreted as local civil time; historical time-zone correction is not currently automated.</p>
+</section>
+
+{% if form %}
+<section class="section guest-bazi-form-section">
+  <div class="master-panel guest-bazi-form-panel">
+    <h2>Your birth details</h2>
+    <form method="post" class="guest-bazi-form">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+      {% endfor %}
+      <button class="luxury-button" type="submit">Calculate My Free BaZi Chart</button>
+    </form>
+  </div>
+</section>
+{% endif %}
+
+{% if result %}
+<section class="section guest-bazi-results">
+  <div class="panel life-overview">
+    <p class="eyebrow">YOUR GUEST CHART</p>
+    <h2>Your BaZi Overview</h2>
+    <div class="overview-grid">
+      <article class="overview-card">
+        <span>CHINESE ZODIAC</span>
+        <h3>{{ result.reading.zodiac.chinese }} · {{ result.reading.zodiac.english }}</h3>
+        <p>Birth date: {{ result.reading.birth_date }}</p>
+      </article>
+      <article class="overview-card">
+        <span>DAY MASTER</span>
+        <h3>{{ result.reading.day_master.stem }}</h3>
+        <p>{{ result.reading.day_master.polarity }} {{ result.reading.day_master.element }}</p>
+      </article>
+    </div>
+    <h2>Four Pillars</h2>
+    <div class="pillars">
+      {% for pillar in result.reading.pillars %}
+        <article class="pillar">
+          <h3>{{ pillar.name }}</h3>
+          <div class="chinese">{{ pillar.chinese }}</div>
+          <p>{{ pillar.stem_element }} · {{ pillar.stem_polarity }}</p>
+          {% if pillar.ten_god_english %}<p>{{ pillar.ten_god_english }}</p>{% endif %}
+          <p>Branch: {{ pillar.branch }}</p>
+        </article>
+      {% endfor %}
+    </div>
+    {% if not result.reading.birth_time_known %}
+      <p class="note">No birth time was entered. The Hour Pillar is omitted, so this chart contains three pillars rather than all four.</p>
+    {% endif %}
+    <h2>Five Elements</h2>
+    <p>{{ result.elements.method }}</p>
+    <div class="grid">
+      {% for element, count in result.elements.structural_totals.items %}
+        <div class="mini"><strong>{{ element }}</strong><br>{{ count }}</div>
+      {% endfor %}
+    </div>
+    <h2>Day Master Reflection</h2>
+    <p>{{ result.strength.label }}</p>
+    <p>{{ result.interpretation.strength_note }}</p>
+    {% for section in result.interpretation.sections %}
+      <article class="overview-card">
+        <h3>{{ section.title }}</h3>
+        <p>{{ section.summary }}</p>
+        <p class="reflection-prompt">{{ section.reflection }}</p>
+      </article>
+    {% endfor %}
+    <p class="overview-disclaimer">{{ result.interpretation.disclaimer }}</p>
+    <p class="note">This is your one free guest calculation for this browser session. Your chart is not saved to a member profile.</p>
+  </div>
+  <div class="master-panel guest-bazi-signup">
+    <h2>Keep your chart and continue exploring</h2>
+    <p>Create an account to save your birth profile, return to your readings and explore more features.</p>
+    <a class="button button-primary" href="{% url 'accounts:signup' %}">Create My Account</a>
+  </div>
+</section>
+{% elif used %}
+<section class="section">
+  <div class="master-panel">
+    <h2>Your free guest calculation has been used</h2>
+    <p>Create an account to save a personal profile and continue exploring Spiritual Wisdom.</p>
+    <a class="button button-primary" href="{% url 'accounts:signup' %}">Create My Account</a>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
