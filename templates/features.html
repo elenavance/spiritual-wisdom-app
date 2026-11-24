@@ -51,14 +51,10 @@
     </article>
 
     <article class="feature-card">
-      <span class="feature-symbol">☁</span>
-      <h3>{{ app_copy.ask_me_title }}</h3>
-      <p>{{ app_copy.ask_me_copy }}</p>
-      {% if user.is_authenticated %}
-        <a href="{% url 'profiles:ask_me' %}">{{ app_copy.enter_ask_me }} →</a>
-      {% else %}
-        <a href="{% url 'accounts:login' %}">{{ app_copy.sign_in_explore }} →</a>
-      {% endif %}
+      <span class="feature-symbol">☸</span>
+      <h3>Buddhist Wisdom</h3>
+      <p>Explore foundational Buddhist teachings, mindful living, compassion and reflection.</p>
+      <a href="{% url 'profiles:buddhist_wisdom' %}">Explore Buddhist Wisdom →</a>
     </article>
 
     <article class="feature-card">
