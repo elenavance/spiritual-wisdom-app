@@ -14,7 +14,11 @@
       <span class="feature-symbol">☯</span>
       <h3>{{ app_copy.personal_readings }}</h3>
       <p>{{ app_copy.personal_readings_copy }}</p>
-      <a href="{% url 'profiles:edit_profile' %}">{{ app_copy.explore_profile }} →</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'profiles:edit_profile' %}">{{ app_copy.explore_profile }} →</a>
+      {% else %}
+        <a href="{% url 'profiles:guest_bazi' %}">Try one free BaZi chart →</a>
+      {% endif %}
     </article>
 
     <article class="feature-card">
