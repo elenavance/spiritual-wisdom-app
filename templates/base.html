@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/features.css' %}">
     <link rel="stylesheet" href="{% static 'css/luxury-global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mobile-app.css' %}">
     {% block extra_head %}{% endblock %}
 
 
@@ -107,7 +108,6 @@ main .page-container header {
             <a href="{% url 'profiles:home' %}">{{ app_copy.home }}</a>
             <a href="{% url 'profiles:features' %}">{{ app_copy.features }}</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'profiles:ask_me' %}">{{ app_copy.ask }}</a>
                 <a href="{% url 'readings:dashboard' %}">{{ app_copy.readings }}</a>
                 <a href="{% url 'profiles:edit_profile' %}">{{ app_copy.profile }}</a>
             {% else %}
@@ -155,25 +155,23 @@ main .page-container header {
         <p class="footer-copyright">© {% now "Y" %} Spiritual Wisdom</p>
     </footer>
 
-    {% if user.is_authenticated %}
-    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
-        <a href="{% url 'profiles:home' %}">
-            <span class="bottom-icon">⌂</span><span>{{ app_copy.home }}</span>
+    <nav class="mobile-bottom-nav" aria-label="Main app navigation">
+        <a href="{% url 'profiles:home' %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+            <span class="bottom-icon" aria-hidden="true">⌂</span><span>Dashboard</span>
         </a>
-        <a href="{% url 'profiles:features' %}">
-            <span class="bottom-icon">✧</span><span>{{ app_copy.features }}</span>
+        <a href="{% url 'profiles:features' %}" {% if request.resolver_match.url_name == 'features' %}aria-current="page"{% endif %}>
+            <span class="bottom-icon" aria-hidden="true">✧</span><span>Explore</span>
         </a>
-        <a href="{% url 'profiles:ask_me' %}">
-            <span class="bottom-icon">☯</span><span>{{ app_copy.ask }}</span>
+        <a href="{% url 'profiles:guest_bazi' %}" {% if request.resolver_match.url_name == 'guest_bazi' %}aria-current="page"{% endif %}>
+            <span class="bottom-icon" aria-hidden="true">☯</span><span>BaZi</span>
         </a>
-        <a href="{% url 'readings:dashboard' %}">
-            <span class="bottom-icon">▤</span><span>{{ app_copy.readings }}</span>
+        <a href="{% url 'profiles:buddhist_wisdom' %}" {% if request.resolver_match.url_name == 'buddhist_wisdom' %}aria-current="page"{% endif %}>
+            <span class="bottom-icon" aria-hidden="true">☸</span><span>Wisdom</span>
         </a>
-        <a href="{% url 'profiles:edit_profile' %}">
-            <span class="bottom-icon">♙</span><span>{{ app_copy.profile }}</span>
+        <a href="{% if user.is_authenticated %}{% url 'profiles:edit_profile' %}{% else %}{% url 'accounts:login' %}{% endif %}">
+            <span class="bottom-icon" aria-hidden="true">♙</span><span>Profile</span>
         </a>
     </nav>
-    {% endif %}
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
