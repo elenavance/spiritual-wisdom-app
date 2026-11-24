@@ -79,12 +79,11 @@ def edit_profile(request):
     )
 
 
+@require_http_methods(["GET", "POST"])
 def guest_bazi(request):
     """Allow one anonymous BaZi calculation per browser session."""
     from types import SimpleNamespace
     import json
-
-    from django.views.decorators.http import require_http_methods
 
     used = request.session.get("guest_bazi_used", False)
     result = request.session.get("guest_bazi_result")
