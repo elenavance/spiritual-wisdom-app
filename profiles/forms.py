@@ -78,3 +78,35 @@ class BirthProfileForm(forms.ModelForm):
                 attrs={"placeholder": "City and country (optional)"}
             ),
         }
+
+
+class GuestBaZiForm(forms.Form):
+    """One-time anonymous BaZi calculation; no profile is persisted."""
+    GENDER_CHOICES = [
+        ("", "Prefer not to say"),
+        ("female", "Female"),
+        ("male", "Male"),
+        ("other", "Other"),
+    ]
+
+    birth_date = forms.DateField(
+        label="Date of birth",
+        widget=forms.DateInput(attrs={"type": "date", "autocomplete": "bday"}),
+    )
+    birth_time = forms.TimeField(
+        label="Time of birth (optional)",
+        required=False,
+        widget=forms.TimeInput(attrs={"type": "time"}),
+        help_text="For a complete Four Pillars chart, enter the local birth time. If unknown, the Hour Pillar will be omitted.",
+    )
+    gender = forms.ChoiceField(
+        label="Gender (optional)",
+        choices=GENDER_CHOICES,
+        required=False,
+    )
+    birth_place = forms.CharField(
+        label="Birthplace (optional)",
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "City and country"}),
+    )
