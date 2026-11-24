@@ -15,6 +15,7 @@
                     <a class="button button-primary" href="{% url 'readings:dashboard' %}">{{ app_copy.readings }} ↗</a>
                     <a class="button button-secondary" href="{% url 'profiles:edit_profile' %}">{{ app_copy.profile }}</a>
                 {% else %}
+                    <a class="button button-primary" href="{% url 'profiles:guest_bazi' %}">Try One Free BaZi Reading ↗</a>
                     <a class="button button-primary" href="{% url 'accounts:signup' %}">{{ app_copy.begin }} ↗</a>
                     <a class="button button-secondary" href="{% url 'accounts:login' %}">{{ app_copy.already }}</a>
                 {% endif %}
@@ -47,17 +48,27 @@
                 <h3>{{ app_copy.elements }}</h3>
                 <p>{{ app_copy.elements_copy }}</p>
             </article>
+            <article class="feature-card reveal">
+                <div class="feature-number">04 / 缘分</div>
+                <h3>Love Compatibility</h3>
+                <p>Explore relationship themes through traditional BaZi and Five Elements symbolism.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'readings:love_compatibility' %}">Explore compatibility →</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={% url 'readings:love_compatibility' %}">Sign in to explore →</a>
+                {% endif %}
+            </article>
         </div>
     </section>
 
-    <section class="section" id="ask-me">
+    <section class="section" id="buddhist-wisdom">
         <div class="ask-panel reveal">
-            <div class="master-orb" aria-hidden="true">道</div>
+            <div class="master-orb" aria-hidden="true">☸</div>
             <div>
-                <div class="eyebrow">{{ app_copy.ask }}</div>
-                <h2>{{ app_copy.ask_title }}</h2>
-                <p>{{ app_copy.ask_copy }}</p>
-                <span class="button button-secondary">{{ app_copy.coming }}</span>
+                <div class="eyebrow">A QUIET MOMENT FOR REFLECTION</div>
+                <h2>Buddhist Wisdom</h2>
+                <p>Explore foundational teachings, mindfulness, compassion and practical reflections drawn from Buddhist traditions.</p>
+                <a class="button button-secondary" href="{% url 'profiles:buddhist_wisdom' %}">Explore Buddhist Wisdom →</a>
             </div>
         </div>
     </section>
