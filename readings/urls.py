@@ -1,25 +1,6 @@
-﻿from django.urls import path
-
-from . import (
-    compatibility_views,
-    feedback_views,
-    other_person_views,
-    views,
-)
-
-app_name = "readings"
-
-urlpatterns = [
-    path("feedback/", feedback_views.feedback, name="feedback"),
-    path(
-        "love-compatibility/",
-        compatibility_views.love_compatibility,
-        name="love_compatibility",
-    ),
-    path(
-        "test-another-person/",
-        other_person_views.test_another_person,
-        name="test_another_person",
-    ),
-    path("", views.dashboard, name="dashboard"),
-]
+path('demo/', views.demo_bazi, name='demo_bazi'),
+path('love/', views.love_compatibility, name='love'),
+path('buddhist/', views.buddhist_wisdom, name='buddhist'),
+path('rate/', views.submit_rating, name='submit_rating'),
+path('reviews/', views.reviews_list, name='reviews_list'),
+path('ask-me/', views.ask_me, name='ask_me'),
